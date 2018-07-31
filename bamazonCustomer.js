@@ -62,13 +62,13 @@ function select() {
   },
 
   ])
-  .then(function(inquirerResponse) {
-    if (inquirerResponse.confirm) {
-      console.log("\nWelcome " + inquirerResponse.username);
-      console.log("Your " + inquirerResponse.pokemon + " is ready for battle!\n");
+  .then(function(input) {
+    if (input.select >= 1 && input.select <= 10) {
+      console.log("You have selected " + input.amount + " of item id " + input.select + ".");
     }
     else {
-      console.log("\nThat's okay " + inquirerResponse.username + ", come again when you are more sure.\n");
+      console.log("Please pick an item number in the inventory.");
+      select();
     }
   })
   .catch(function(err){
