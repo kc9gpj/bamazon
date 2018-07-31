@@ -1,7 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require('inquirer')
 var figlet = require('figlet');
- 
+//  display asci bamazon
 figlet('BAMAZON', function(err, data) {
     if (err) {
         console.log('Something went wrong...');
@@ -29,11 +29,12 @@ connection.connect(function(err) {
   if (err) throw err;
   readProducts();
 });
+// list out all available items for sale
 function readProducts() {
     console.log("Products Available...\n");
     connection.query("SELECT * FROM products", function(err, res) {
       if (err) throw err;
-      else {                
+      else {                 
         for (var i = 0; i < res.length; i++) {
           console.log("ID: " + res[i].id);
           console.log("NAME: " + res[i].product_name);
@@ -45,6 +46,7 @@ function readProducts() {
     });
    
   }
+  // prompt user with what they want to purchase
 function select() {
   inquirer
   .prompt([
@@ -52,7 +54,7 @@ function select() {
     {
       type: "input",
       message: "What ID # would you like to purchase?",
-      name: "select"
+      name: "select",
     },
 
     {
@@ -62,9 +64,29 @@ function select() {
   },
 
   ])
+  // confirm their purchase
   .then(function(input) {
     if (input.select >= 1 && input.select <= 10) {
       console.log("You have selected " + input.amount + " of item id " + input.select + ".");
+      inquirer
+      .prompt([
+      {
+        type: "confirm",
+        message: "Are you sure:",
+        name: "confirm",
+        default: true
+      }
+    ])
+    .then(function(inquirerResponse) {
+      if (inquirerResponse.confirm === true) {
+      }
+      else {
+        select();
+      }
+    })
+    .catch(function(err){
+      console.log(err);
+    });
     }
     else {
       console.log("Please pick an item number in the inventory.");
