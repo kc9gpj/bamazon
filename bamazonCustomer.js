@@ -1,6 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require('inquirer')
 var figlet = require('figlet');
+
 //  display asci bamazon
 figlet('BAMAZON', function(err, data) {
     if (err) {
@@ -43,8 +44,7 @@ function readProducts() {
         }
         select();
       }
-    });
-   
+    }); 
   }
   // prompt user with what they want to purchase
 function select() {
@@ -66,6 +66,8 @@ function select() {
   ])
   // confirm their purchase
   .then(function(input) {
+    var userInput = input.select;
+    var userQuantity = input.amount;
     if (input.select >= 1 && input.select <= 10) {
       console.log("You have selected " + input.amount + " of item id " + input.select + ".");
       inquirer
@@ -79,6 +81,7 @@ function select() {
     ])
     .then(function(inquirerResponse) {
       if (inquirerResponse.confirm === true) {
+        placeOrder();
       }
       else {
         select();
@@ -92,11 +95,40 @@ function select() {
       console.log("Please pick an item number in the inventory.");
       select();
     }
+
+    
+    // update quantity and tell customer if product is available
+    function placeOrder(){
+      var query = connection.query(
+        "UPDATE products SET ? WHERE ?",
+        [
+          {
+            quantity: -userQuantity
+
+          },
+          {
+            id: userInput
+          }
+        ],
+        
+        function(err, res) {
+          console.log(res.affectedRows + " products updated!\n");
+          
+        }
+      );
+    
+      // logs the actual query being run
+      console.log(query.sql);
+    }
+      
   })
   .catch(function(err){
     console.log(err);
   });
+  
 }
+
+
   // * The first should ask them the ID of the product they would like to buy.
   // * The second message should ask how many units of the product they would like to buy.
 
