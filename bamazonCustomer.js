@@ -73,10 +73,10 @@ function select() {
     
       connection.query("SELECT * FROM products", function(err, res) {
         var subtract = ((res[userInput - 1].quantity)-userQuantity)
-        if (err) throw err;
+          if (err) throw err;
         // Log all results of the SELECT statement
         if (userQuantity <= res[userInput - 1].quantity){
-       console.log("Thank you for your purchase! Your total is " + (res[userInput - 1].quantity) * (res[userInput - 1].price));
+       console.log("Thank you for your purchase! Your total is $" + userQuantity * (res[userInput - 1].price) + ".");
        var query = connection.query(
         "UPDATE products SET ? WHERE ?",
         [
@@ -88,7 +88,7 @@ function select() {
           }
         ],
         function(err, res) {
-          console.log(res.affectedRows + " products updated!\n");
+          console.log(" Have A Great Day!\n");
         connection.end();
         }
       );
