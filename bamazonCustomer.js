@@ -35,7 +35,8 @@ function readProducts() {
     console.log("Products Available...\n");
     connection.query("SELECT * FROM products", function(err, res) {
       if (err) throw err;
-      else {                 
+      else {              
+        // loop through id, product name, price and display   
         for (var i = 0; i < res.length; i++) {
           console.log("ID: " + res[i].id);
           console.log("NAME: " + res[i].product_name);
@@ -52,12 +53,14 @@ function select() {
   .prompt([
     // Here we create a basic text prompt.
     {
+      // ask for product id
       type: "input",
       message: "What ID # would you like to purchase?",
       name: "select",
     },
 
     {
+      // ask for quanitity
       type: "input",
       message: "How many would you like to purchase?",
       name: "amount"
@@ -68,16 +71,19 @@ function select() {
   .then(function(input) {
     var userInput = input.select;
     var userQuantity = input.amount;
+    // check for id number to be between 1 and 10
     if (input.select >= 1 && input.select <= 10) {
       console.log("You have selected " + userQuantity + " of item id " + userInput + ".");
     
       connection.query("SELECT * FROM products", function(err, res) {
+        // var to subtract user quanitity from database
         var subtract = ((res[userInput - 1].quantity)-userQuantity)
           if (err) throw err;
         // Log all results of the SELECT statement
         if (userQuantity <= res[userInput - 1].quantity){
        console.log("Thank you for your purchase! Your total is $" + userQuantity * (res[userInput - 1].price) + ".");
        var query = connection.query(
+        //  update quantity by id
         "UPDATE products SET ? WHERE ?",
         [
           {
@@ -88,18 +94,21 @@ function select() {
           }
         ],
         function(err, res) {
+          // end of update function message
           console.log(" Have A Great Day!\n");
         connection.end();
         }
       );
         }
        else {
+        //  messeage if quantity is not available, reset to select function
          console.log("Sorry, we only have " + res[userInput - 1].quantity + " of this item.")
          select();
        }
       });
     }
     else {
+      // message if id is not an DataTransferItem, reset to select function
       console.log("Please pick an item number in the inventory.");
       select();
     }
