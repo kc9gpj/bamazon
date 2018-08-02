@@ -11,6 +11,7 @@ figlet('BAMAZON', function(err, data) {
     }
     console.log(data);
     console.log("Manager View\n");
+    userPrompt();
 });
 
 var connection = mysql.createConnection({
@@ -32,7 +33,7 @@ connection.connect(function(err) {
   
 });
 
-userPrompt();
+
 
 function userPrompt(){
 // Create a "Prompt" with a series of questions.
@@ -107,15 +108,13 @@ function readProducts() {
           for (var i = 0; i < res.length; i++) {
 
             if(res[i].quantity < 10 ){
-            console.log(res[i].quantity + " is low.")
-            userPrompt();
+            console.log(res[i].product_name + " is low on inventory. " + res[i].quantity + " are left in stock.")
+            
+           
             }
-
-            else {
-                console.log("You do not need to order any inventory!")
-                userPrompt();
-            }
+            
           }
+          userPrompt();
         }
       }); 
   }
@@ -129,9 +128,9 @@ function readProducts() {
     inquirer.prompt([
 
         {
-          type: "input",
-          name: "id",
-          message: "What is the id number?"
+            type: "input",
+            name: "id",
+            message: "What is the id number?"
         },
         {
             type: "input",
@@ -159,11 +158,11 @@ function readProducts() {
         var query = connection.query(
           "INSERT INTO products SET ?",
           {
-            id: "+input.id+",
-            product_name: "+input.product_name+", 
-            department_name: "+input.productDep+",
-            price: "+input.price+",
-            quantity: "+input.quantity+"
+            id: input.id,
+            product_name: input.product_name, 
+            department_name: input.productDep,
+            price: input.price,
+            quantity: input.quantity
           },
           function(err, res) {
             console.log(res.affectedRows + " product inserted!\n");
