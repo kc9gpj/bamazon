@@ -1,7 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require('inquirer')
 var figlet = require('figlet');
-
+  
 //  display asci bamazon
 figlet('BAMAZON', function(err, data) {
     if (err) {
@@ -69,58 +69,40 @@ function select() {
     var userInput = input.select;
     var userQuantity = input.amount;
     if (input.select >= 1 && input.select <= 10) {
-      console.log("You have selected " + input.amount + " of item id " + input.select + ".");
-      inquirer
-      .prompt([
-      {
-        type: "confirm",
-        message: "Are you sure:",
-        name: "confirm",
-        default: true
-      }
-    ])
-    .then(function(inquirerResponse) {
-      if (inquirerResponse.confirm === true) {
-        placeOrder();
-      }
-      else {
-        select();
-      }
-    })
-    .catch(function(err){
-      console.log(err);
-    });
-    }
-    else {
-      console.log("Please pick an item number in the inventory.");
-      select();
-    }
-
+      console.log("You have selected " + userQuantity + " of item id " + userInput + ".");
     
-    // update quantity and tell customer if product is available
-    function placeOrder(){
-      var query = connection.query(
+      connection.query("SELECT * FROM products", function(err, res) {
+        var subtract = ((res[userInput - 1].quantity)-userQuantity)
+        if (err) throw err;
+        // Log all results of the SELECT statement
+        if (userQuantity <= res[userInput - 1].quantity){
+       console.log("Thank you for your purchase! Your total is " + (res[userInput - 1].quantity) * (res[userInput - 1].price));
+       var query = connection.query(
         "UPDATE products SET ? WHERE ?",
         [
           {
-            quantity: -userQuantity
-
+            quantity: subtract
           },
           {
             id: userInput
           }
         ],
-        
         function(err, res) {
           console.log(res.affectedRows + " products updated!\n");
-          
+        connection.end();
         }
       );
-    
-      // logs the actual query being run
-      console.log(query.sql);
+        }
+       else {
+         console.log("Sorry, we only have " + res[userInput - 1].quantity + " of this item.")
+         select();
+       }
+      });
     }
-      
+    else {
+      console.log("Please pick an item number in the inventory.");
+      select();
+    }
   })
   .catch(function(err){
     console.log(err);
