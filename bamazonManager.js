@@ -32,9 +32,9 @@ connection.connect(function(err) {
   
 });
 
-prompt();
+userPrompt();
 
-function prompt(){
+function userPrompt(){
 // Create a "Prompt" with a series of questions.
 inquirer
   .prompt([
@@ -94,13 +94,30 @@ function readProducts() {
           console.log(" ");
         }
 
-        prompt();
+        userPrompt();
       }
     }); 
   }
 
   function lowInventory(){
+    connection.query("SELECT * FROM products", function(err, res) {
+        if (err) throw err;
+        else {              
+          // loop through id, product name, price and display   
+          for (var i = 0; i < res.length; i++) {
 
+            if(res[i].quantity < 10 ){
+            console.log(res[i].quantity + " is low.")
+            userPrompt();
+            }
+
+            else {
+                console.log("You do not need to order any inventory!")
+                userPrompt();
+            }
+          }
+        }
+      }); 
   }
 
   function addInventory(){
@@ -108,7 +125,58 @@ function readProducts() {
   }
 
   function addProduct(){
+    
+    inquirer.prompt([
 
+        {
+          type: "input",
+          name: "id",
+          message: "What is the id number?"
+        },
+        {
+            type: "input",
+            name: "productName",
+            message: "What is the product name?"
+        },
+        {
+            type: "input",
+            name: "productDep",
+            message: "What is the department name?"
+        },
+        {
+            type: "input",
+            name: "price",
+            message: "What is the price of the product?"
+        },
+        {
+            type: "input",
+            name: "quantity",
+            message: "What is the quantity of this product?"
+        },
+      
+      ]).then(function(input) {
+        console.log("Inserting a new product...\n");
+        var query = connection.query(
+          "INSERT INTO products SET ?",
+          {
+            id: "+input.id+",
+            product_name: "+input.product_name+", 
+            department_name: "+input.productDep+",
+            price: "+input.price+",
+            quantity: "+input.quantity+"
+          },
+          function(err, res) {
+            console.log(res.affectedRows + " product inserted!\n");
+            // Call updateProduct AFTER the INSERT completes
+            userPrompt();
+          }
+        );
+      
+        // logs the actual query being run
+        console.log(query.sql);
+      
+      });
+ 
   }
 
 
