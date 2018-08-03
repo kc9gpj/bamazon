@@ -109,20 +109,45 @@ function readProducts() {
 
             if(res[i].quantity < 10 ){
             console.log(res[i].product_name + " is low on inventory. " + res[i].quantity + " are left in stock.")
-            
-           
-            }
-            
+            } 
           }
           userPrompt();
         }
       }); 
   }
-
   function addInventory(){
+    inquirer.prompt([
 
-  }
-
+        {
+            type: "input",
+            name: "id",
+            message: "What id# would you like to add inventory to?"
+        },
+        {
+            type: "input",
+            name: "quantity",
+            message: "How much would you like to add?"
+        },
+  
+]).then(function(input) {
+    console.log("Inserting a new product...\n");
+    var query = connection.query(
+      "INSERT INTO products SET ?",
+      {
+        id: input.id,
+        quantity: input.quantity
+      },
+      function(err, res) {
+        // Call updateProduct AFTER the INSERT completes
+        userPrompt();
+      }
+    );
+  
+    // logs the actual query being run
+    console.log(query.sql);
+  
+  });
+}
   function addProduct(){
     
     inquirer.prompt([
@@ -159,13 +184,12 @@ function readProducts() {
           "INSERT INTO products SET ?",
           {
             id: input.id,
-            product_name: input.product_name, 
+            product_name: input.productName, 
             department_name: input.productDep,
             price: input.price,
             quantity: input.quantity
           },
           function(err, res) {
-            console.log(res.affectedRows + " product inserted!\n");
             // Call updateProduct AFTER the INSERT completes
             userPrompt();
           }
