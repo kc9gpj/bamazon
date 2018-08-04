@@ -72,7 +72,7 @@ function select() {
     var userInput = input.select;
     var userQuantity = input.amount;
     // check for id number to be between 1 and 10
-    if (input.select >= 1 && input.select <= 10) {
+    if (input.select >= 1 && input.select <= 20) {
       console.log("You have selected " + userQuantity + " of item id " + userInput + ".");
     
       connection.query("SELECT * FROM products", function(err, res) {

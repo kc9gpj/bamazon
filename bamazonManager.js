@@ -125,27 +125,38 @@ function readProducts() {
         },
         {
             type: "input",
-            name: "quantity",
+            name: "add",
             message: "How much would you like to add?"
         },
-  
+
 ]).then(function(input) {
-    console.log("Inserting a new product...\n");
-    var query = connection.query(
-      "INSERT INTO products SET ?",
+    var userInput = input.id;
+    var userQuantity = input.add;
+    connection.query("SELECT * FROM products", function(err, res) {
+
+      // var to subtract user quanitity from database
+      var add = parseFloat(((res[userInput - 1].quantity))+parseFloat(userQuantity))
+      if (err) throw err;
+    // Log all results of the SELECT statement
+   var query = connection.query(
+    //  update quantity by id
+    "UPDATE products SET ? WHERE ?",
+    [
       {
-        id: input.id,
-        quantity: input.quantity
+        quantity: add
       },
-      function(err, res) {
-        // Call updateProduct AFTER the INSERT completes
-        userPrompt();
+      {
+        id: userInput
       }
-    );
-  
-    // logs the actual query being run
-    console.log(query.sql);
-  
+    ],
+    function(err, res) {
+      // end of update function message
+     
+    userPrompt();
+    }
+    
+  );
+ });
   });
 }
   function addProduct(){
